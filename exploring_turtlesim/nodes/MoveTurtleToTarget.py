@@ -1,70 +1,79 @@
 #!/usr/bin/env python
 
-"""
-This script is used to publish commands to the /turtle1/cmd_vel topic
-to move the turtle in a square boundary.
-"""
-
 import rospy
-import math
 from geometry_msgs.msg import Twist
 from turtlesim.msg import Pose
+import math
 
-# Global variable to store the current position
-current_position = Pose()
+class TurtlebotNavigation:
+    def __init__(self):
+        rospy.init_node('move_turtle_to_target', anonymous=True)
 
-# Publisher for turtle movement
-movePublisher = rospy.Publisher("/turtle1/cmd_vel", Twist, queue_size=10)
+        # Publisher to publish the command velocity
+        self.velocity_publisher = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
 
-def current_pose_callback(msg):
-    global current_position
-    # Update the current position with the incoming message
-    current_position = msg
+        # Subscriber to get the turtle's current pose
+        self.pose_subscriber = rospy.Subscriber('/turtle1/pose', Pose, self.update_pose)
 
-def subscribePosition():
-    rospy.Subscriber("/turtle1/pose", Pose, current_pose_callback)
+        self.pose = Pose()
+        self.rate = rospy.Rate(10)
 
-def turtleConsole(target, direction):
-    moveCommand = Twist()
+    """
+    This function updates the turtlebot's current pose
+    """
+    def update_pose(self, data):
+        self.pose = data
+        self.pose.x = round(self.pose.x, 4)
+        self.pose.y = round(self.pose.y, 4)
+
+    """
+    Function to calculate euclidean distance between goal and target
+    """
+    def get_euclidean_distance(self, goal_pose):
+        return math.sqrt((goal_pose.x - self.pose.x) ** 2 + (goal_pose.y - self.pose.y) ** 2)
     
-    # Calculate time for movement based on difference (not accurate, better to use distances)
-    distance = target - current_position.x if direction == "x" else target - current_position.y
-    timeInSeconds = abs(distance) / 2.0  # Example simple time estimate
+    
+    def linear_vel(self, goal_pose, constant=1.5):
+        return constant * self.get_euclidean_distance(goal_pose)
+    
+    def steering_angle(self, goal_pose):
+        return math.atan2(goal_pose.y - self.pose.y, goal_pose.x - self.pose.x)
+    
 
-    if direction == "x":
-        moveCommand.linear.x = 2.0 if distance > 0 else -2.0
-    elif direction == "y":
-        moveCommand.linear.y = 2.0 if distance > 0 else -2.0
+    def angular_vel(self, goal_pose, constant=6):
+        return constant * (self.steering_angle(goal_pose) - self.pose.theta)
+    
+    def move_to_goal(self):
+        goal_pose = Pose()
+        goal_pose.x = float(input("Set your x goal: "))
+        goal_pose.y = float(input("Set your y goal: "))
+        distance_tolerance = 0.01
 
-    # Publish the movement command
-    movePublisher.publish(moveCommand)
+        vel_msg = Twist()
 
-def navigationBeginsHere():
-    # Define the target position
-    target = Pose()
-    target.x = 10
-    target.y = 10
+        while self.get_euclidean_distance(goal_pose) >= distance_tolerance and not rospy.is_shutdown():
+            # Proportional controller
+            vel_msg.linear.x = self.linear_vel(goal_pose)
+            vel_msg.linear.y = 0
+            vel_msg.linear.z = 0
 
-    # Start subscribing to the pose
-    subscribePosition()
+            vel_msg.angular.x = 0
+            vel_msg.angular.y = 0
+            vel_msg.angular.z = self.angular_vel(goal_pose)
 
-    # Wait until we have the initial pose data
-    rospy.sleep(1)
+            self.velocity_publisher.publish(vel_msg)
+            self.rate.sleep()
 
-    # Move in the x direction if needed
-    if current_position.x < target.x:
-        while current_position.x < target.x:
-            turtleConsole(target.x, "x")
-            rospy.sleep(0.1)  # small sleep to allow time for movement and feedback
+        # Stop movement once goal reached
+        vel_msg.linear.x = 0
+        vel_msg.angular.z = 0
+        self.velocity_publisher.publish(vel_msg)
+        rospy.loginfo("Goal reached!")
 
-    # Move in the y direction if needed
-    if current_position.y < target.y:
-        while current_position.y < target.y:
-            turtleConsole(target.y, "y")
-            rospy.sleep(0.1)
-
-    rospy.loginfo("Target reached at position (%.2f, %.2f)", current_position.x, current_position.y)
-
-if __name__ == "__main__":
-    rospy.init_node("move_turtle_in_square")
-    navigationBeginsHere()
+if __name__ == '__main__':
+    try:
+        x = TurtlebotNavigation()
+        x.move_to_goal()
+    except rospy.ROSInterruptException:
+        pass
+    
