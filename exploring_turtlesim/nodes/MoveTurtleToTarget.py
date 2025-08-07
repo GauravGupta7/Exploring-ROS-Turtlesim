@@ -44,9 +44,11 @@ class TurtlebotNavigation:
         return constant * (self.steering_angle(goal_pose) - self.pose.theta)
     
     def move_to_goal(self):
+        target_x = rospy.get_param('~target_x', 10)
+        target_y = rospy.get_param('~target_y', 10)
         goal_pose = Pose()
-        goal_pose.x = float(input("Set your x goal: "))
-        goal_pose.y = float(input("Set your y goal: "))
+        goal_pose.x = target_x
+        goal_pose.y = target_y
         distance_tolerance = 0.01
 
         vel_msg = Twist()
@@ -54,11 +56,6 @@ class TurtlebotNavigation:
         while self.get_euclidean_distance(goal_pose) >= distance_tolerance and not rospy.is_shutdown():
             # Proportional controller
             vel_msg.linear.x = self.linear_vel(goal_pose)
-            vel_msg.linear.y = 0
-            vel_msg.linear.z = 0
-
-            vel_msg.angular.x = 0
-            vel_msg.angular.y = 0
             vel_msg.angular.z = self.angular_vel(goal_pose)
 
             self.velocity_publisher.publish(vel_msg)
