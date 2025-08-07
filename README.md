@@ -11,3 +11,7 @@ Command to see the code in action:
 ```shell
 roslaunch exploring_turtlesim SendTurtleToTarget.launch
 ```
+
+The image below shows the output for task 1:
+
+![image info](./exploring_turtlesim//imgs/task1.png)
