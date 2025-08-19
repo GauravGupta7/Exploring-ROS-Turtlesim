@@ -17,7 +17,7 @@ The image below shows the output for task 1:
 ![image info](./exploring_turtlesim//imgs/task1.png)
 
 
-## **Task 1: Spawn multiple Turtlesim turtles in the same screen**
+## **Task 2: Spawn multiple Turtlesim turtles in the same screen**
 
 **Files Used:**
 1. `SpawnAdditionalTurtes.py`: Node to connect to '/spawn' service hosted by turtlesim. 
