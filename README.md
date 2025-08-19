@@ -37,3 +37,24 @@ The turtlesim hosts a service named '/spawn'. This service accepts the orientati
 ![image info](./exploring_turtlesim//imgs/task2_2.png)
 
 Here, it is visible that the 'turtle1' and 'turtle2' are assigned same topics separately. We can publish commands to different topics and make them work independently. We are passing the initial spawning coordinates of the second turtle through the launch file as parameters. To change the spawning coordinates the parameters' values can be updated in the launch file. 
+
+
+## **Task 3: Send different turtles to different target location**
+
+In this task we need to implement the spawning of two different turtlesim bots in the same window and control them simultaneously and independently and send them to desired coordinates passed by the user. 
+
+**Files Used:**
+1. `MoveAnyTurtleToTarget.py`: Node that navigates a single turtle at one time to the desired target location. 
+2. `MoveAnyTurtleToTarget.launch`: Launch file to spawn two turtles and help them navigate independently using the `MoveAnyTurtleToTarget.py` script.
+
+Command to see the code in action:
+
+```shell
+roslaunch exploring_turtlesim MoveAnyTurtleToTarget.launch
+```
+
+The image below shows the output for task 3:
+
+![image info](./exploring_turtlesim//imgs/task3_1.png)
+
+Here, we have parameterized the topic names for the script 'MoveAnyTurtleToTarget.py'. We are passing different topics' names for turtle1 and turtle2 as parameters in the launch file named 'MoveAnyTurtleToTarget.launch'. This ensures that both the turtles are handled independently.

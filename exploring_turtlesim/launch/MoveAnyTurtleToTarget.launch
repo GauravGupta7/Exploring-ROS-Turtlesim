@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="turtlesim" type="turtlesim_node" name="turtle1" />
+    <node pkg="exploring_turtlesim" type="SpawnAdditionalTurtles.py" name="Multiple_Turtles_Spawner" output="screen" >
+        <param name="starting_x" value="-2" />
+        <param name="starting_y" value="-2" />
+    </node>
+    <node pkg="exploring_turtlesim" type="MoveAnyTurtleToTarget.py" name="Send_Turtle1_To_Target" output="screen">
+        <param name="target_x" value="9" />
+        <param name="target_y" value="10" />
+        <param name="vel_topic" value="/turtle1/cmd_vel" />
+        <param name="pose_topic" value="/turtle1/pose" />
+    </node>
+    <node pkg="exploring_turtlesim" type="MoveAnyTurtleToTarget.py" name="Send_Turtle2_To_Target" output="screen">
+        <param name="target_x" value="5" />
+        <param name="target_y" value="10" />
+        <param name="vel_topic" value="/turtle2/cmd_vel" />
+        <param name="pose_topic" value="/turtle2/pose" />
+    </node>
+</launch>
