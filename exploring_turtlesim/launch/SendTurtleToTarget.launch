@@ -2,7 +2,7 @@
 <launch>
     <node pkg="turtlesim" type="turtlesim_node" name="turtle1" />
     <node pkg="exploring_turtlesim" type="MoveTurtleToTarget.py" name="Send_Turtle_To_Target" output="screen">
-        <param name="target_x" value="5" />
+        <param name="target_x" value="9" />
         <param name="target_y" value="10" />
     </node>
 </launch>
