@@ -1,5 +1,9 @@
 # Exploring-ROS-Turtlesim
 
+This repository contains implementation of several tasks using TurtleSim tool. It can be used by ROS aspirants to enhance their understanding of crucial concepts and building blocks of ROS: topics, nodes, launch files, services, messages, etc. These concepts lay the foundation to higer level concepts in ROS. 
+
+The task and the concept behind is written below. 
+
 ## **Task 1: Sending Turtlesim Turtle to user-defined coordinates**
 
 **Files Used:**
